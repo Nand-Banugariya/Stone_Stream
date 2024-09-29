@@ -4,6 +4,7 @@ const userRoutes = require('./routes/registerroute'); // Registration routes
 const loginRoutes = require('./routes/loginroute'); 
 const purchaseRoute = require('./routes/purchaseroute')
 const salesRoute = require('./routes/salesrouter')
+const inventoryroute = require('./routes/inventoryroute')
 const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
@@ -11,7 +12,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Middlewarer
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json());
@@ -23,6 +24,7 @@ app.use('/api', userRoutes);
 app.use('/api', loginRoutes); 
 app.use('/api',purchaseRoute);
 app.use('/api',salesRoute);
+app.use('/api',inventoryroute); 
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });

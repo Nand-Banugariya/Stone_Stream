@@ -26,13 +26,13 @@ const Navbar2 = () => {
                     <li><Link to="/invoice"><FaFileInvoice /> Invoice</Link></li>
                     <li><Link to="/"><FaSignOutAlt /> Logout</Link></li>
                 </ul>
-            <div className="profile-section">
-                <FaUserCircle className="profile-icon" />
-                <div className="profile-details">
-                    <h4>John Doe</h4> {/* Username */}
-                    <Link to="/profile-setting">Profile Settings</Link> {/* Link to profile settings */}
+                <div className="profile-section">
+                    <FaUserCircle className="profile-icon" />
+                    <div className="profile-details">
+                        <h4>John Doe</h4> {/* Username */}
+                        <Link to="/profile-setting">Profile Settings</Link> {/* Link to profile settings */}
+                    </div>
                 </div>
-            </div>
             </nav>
         </>
     );

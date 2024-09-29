@@ -5,6 +5,7 @@ const loginRoutes = require('./routes/loginroute');
 const purchaseRoute = require('./routes/purchaseroute')
 const salesRoute = require('./routes/salesrouter')
 const inventoryroute = require('./routes/inventoryroute')
+const orderhistoryroute = require('./routes/orderhistoryroute')
 const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
@@ -24,7 +25,8 @@ app.use('/api', userRoutes);
 app.use('/api', loginRoutes); 
 app.use('/api',purchaseRoute);
 app.use('/api',salesRoute);
-app.use('/api',inventoryroute); 
+app.use('/api',inventoryroute);
+app.use('/api/orders',orderhistoryroute) 
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });

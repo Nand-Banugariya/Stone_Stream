@@ -13,7 +13,7 @@ exports.loginUser = async (req, res) => {
     }
 
   
-    const isMatch = await bcrypt.compare(password,users.password);
+    const isMatch =  User.findOne({password});
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid  password' });
     }

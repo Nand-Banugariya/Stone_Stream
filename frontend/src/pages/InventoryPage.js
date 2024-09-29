@@ -33,10 +33,20 @@ const InventoryPage = () => {
   };
 
   const handleSubmit = () => {
+    // Check if any field is empty
+    if (!itemData.name || !itemData.description || !itemData.amount || !itemData.image) {
+      alert("All fields are required.");
+      return;
+    }
+  
+    // Add new item to the list
     setItems([...items, itemData]);
-    setItemData({ name: "", description: "", image: "" });
+  
+    // Reset the form data and close the modal
+    setItemData({ name: "", description: "", amount: "", image: "" });
     closeModal();
   };
+  
 
   return (
     <>
@@ -58,14 +68,24 @@ const InventoryPage = () => {
             placeholder="Item Name"
             value={itemData.name}
             onChange={handleInputChange}
+            required
           />
           <textarea
             name="description"
             placeholder="Item Description"
             value={itemData.description}
             onChange={handleInputChange}
+            required
           />
-          <input type="file" accept="image/*" onChange={handleImageChange} />
+          <input
+            type="number"
+            name="amount"
+            placeholder="Amount"
+            value={itemData.amount}
+            onChange={handleInputChange}
+            required
+          />
+          <input type="file" accept="image/*" onChange={handleImageChange} required/>
           <button onClick={handleSubmit}>Submit</button>
         </Modal>
         <div className="item-cards">

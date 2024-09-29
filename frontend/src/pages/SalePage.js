@@ -8,7 +8,7 @@ const SalePage = () => {
     customerName: "",
     customerEmail: "",
     customerMobile: "",
-    paymentMethod: "",
+    paymentMethod: "Cash", // Default to 'cash' or adjust as necessary
     itemName: "",
     quantity: "",
     amount: "",
@@ -34,23 +34,17 @@ const SalePage = () => {
     const lastThree = num.slice(-3);
     const otherParts = num.slice(0, -3);
 
-    const formattedNumber = otherParts
-      .replace(/\B(?=(\d{2})+(?!\d))/g, ",")
-      .concat("," + lastThree);
-
-    return formattedNumber;
+    return (
+      otherParts.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree
+    );
   };
 
   const validateForm = () => {
     const errors = {};
-    if (!formData.customerName)
-      errors.customerName = "Customer Name is required";
-    if (!formData.customerEmail)
-      errors.customerEmail = "Customer Email is required";
-    if (!formData.customerMobile)
-      errors.customerMobile = "Customer Mobile is required";
-    if (!formData.paymentMethod)
-      errors.paymentMethod = "Payment Method is required";
+    if (!formData.customerName) errors.customerName = "Customer Name is required";
+    if (!formData.customerEmail) errors.customerEmail = "Customer Email is required";
+    if (!formData.customerMobile) errors.customerMobile = "Customer Mobile is required";
+    if (!formData.paymentMethod) errors.paymentMethod = "Payment Method is required";
     if (!formData.itemName) errors.itemName = "Item Name is required";
     if (!formData.quantity) errors.quantity = "Quantity is required";
     if (!formData.amount) errors.amount = "Amount is required";
@@ -69,12 +63,12 @@ const SalePage = () => {
         const response = await axios.post("http://localhost:5000/api/sales", formData);
         console.log("Sale Data Submitted:", response.data);
 
-        // Reset form after submission
+        // Reset form after successful submission
         setFormData({
           customerName: "",
           customerEmail: "",
           customerMobile: "",
-          paymentMethod: "",
+          paymentMethod: "cash", // Reset to default payment method
           itemName: "",
           quantity: "",
           amount: "",
@@ -84,7 +78,11 @@ const SalePage = () => {
         setSubmissionError(""); // Clear any previous error
       } catch (error) {
         console.error("Error submitting sale data:", error);
-        setSubmissionError("Error submitting sale data. Please try again.");
+        if (error.response) {
+          setSubmissionError(error.response.data.message || "Error submitting sale data. Please try again.");
+        } else {
+          setSubmissionError("Error submitting sale data. Please try again.");
+        }
       }
     }
   };
@@ -144,9 +142,6 @@ const SalePage = () => {
                 onChange={handleChange}
                 required
               >
-                <option value="" disabled>
-                  Select Payment Method
-                </option>
                 <option value="cash">Cash</option>
                 <option value="online">Online</option>
               </select>
@@ -218,4 +213,3 @@ const SalePage = () => {
 };
 
 export default SalePage;
-

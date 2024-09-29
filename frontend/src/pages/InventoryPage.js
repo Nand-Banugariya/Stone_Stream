@@ -4,13 +4,16 @@ import ItemCard from "../components/ItemCard.js";
 import "../styles/InventoryPage.css";
 import Navbar2 from "../components/Navbar2.js";
 
+// Ensure Modal is set properly
+Modal.setAppElement('#root');
+
 const InventoryPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [items, setItems] = useState([]);
   const [itemData, setItemData] = useState({
     name: "",
     description: "",
-    amount: "",  // <-- Ensure amount is part of the state
+    amount: "",
     image: "",
   });
 
@@ -46,8 +49,6 @@ const InventoryPage = () => {
     }
   };
 
-  const handleSubmit = () => {
-
   // Submit form to backend to save the item
   const handleSubmit = async () => {
     // Check if any field is empty
@@ -55,15 +56,6 @@ const InventoryPage = () => {
       alert("All fields are required.");
       return;
     }
-
-  
-    // Add new item to the list
-    setItems([...items, itemData]);
-  
-    // Reset the form data and close the modal
-    setItemData({ name: "", description: "", amount: "", image: "" });
-    closeModal();
-
 
     try {
       // Log the itemData to see what is being sent
@@ -92,14 +84,11 @@ const InventoryPage = () => {
       console.error("Error:", error);
       alert("Error adding item.");
     }
-
   };
-  
 
   return (
     <>
       <Navbar2 />
-
       <div className="inventory-page">
         <button className="plus-button" onClick={openModal}>
           +
@@ -153,6 +142,5 @@ const InventoryPage = () => {
     </>
   );
 };
-}
 
 export default InventoryPage;

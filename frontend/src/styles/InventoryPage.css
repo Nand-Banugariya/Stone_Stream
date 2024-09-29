@@ -1,12 +1,12 @@
 .inventory-page {
-  /* padding: 20px; */
   padding-left: 300px;
   padding-bottom: 10px;
   background-color: #f9f9f9;
-  min-height: 100vh;
+  height: 100vh; /* Full viewport height */
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-y: auto; /* Allow scrolling when items overflow */
 }
 
 .plus-button {
@@ -85,15 +85,16 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Ensure content is centered */
-  text-align: center; /* Center text alignment */
+  align-items: center;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .item-card img {
   max-width: 100%;
   height: auto;
   border-radius: 4px;
-  margin-bottom: 15px; /* Add margin to space the image from the title */
+  margin-bottom: 15px;
 }
 
 .item-card h3 {

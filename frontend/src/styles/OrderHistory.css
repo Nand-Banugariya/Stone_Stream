@@ -1,56 +1,199 @@
+/* Container styling */
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .date-filter {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  .button-group {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-  
-  button {
-    padding: 10px 20px;
-    margin: 0 10px;
-    cursor: pointer;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  button.active {
-    background-color: #007bff;
-    color: white;
-    border: none;
-  }
-  
-  .history-list table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .history-list th, .history-list td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: center;
-  }
-  
-  .history-list th {
-    background-color: #f8f8f8;
-  }
-  
-  p {
-    text-align: center;
-    margin: 20px 0;
-  }
-  
+  padding-left: 300px;
+  padding-bottom: 10px;
+  background-color: #f4f6f9; /* Softer background for a clean look */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+}
+
+/* Header styling */
+/* h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 2.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+} */
+
+/* Date filter section */
+.date-filter {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.date-filter label {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-right: 10px;
+}
+
+.react-datepicker-wrapper {
+  display: inline-block;
+  width: auto;
+}
+
+.react-datepicker__input-container input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+/* Search bar */
+.search-bar {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.search-bar input {
+  padding: 10px;
+  width: 300px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.search-bar input:focus {
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5); /* Subtle blue glow on focus */
+  outline: none;
+}
+
+/* Button group for toggling Purchase/Sales history */
+.button-group {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.button-group button {
+  padding: 12px 24px;
+  margin: 0 10px;
+  cursor: pointer;
+  background-color: #007bff;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.button-group button.active {
+  background-color: #0056b3; /* Darker blue for active button */
+  transform: scale(1.05); /* Slightly enlarges the active button */
+}
+
+.button-group button:hover {
+  background-color: #0056b3;
+}
+
+.button-group button:active {
+  transform: scale(1); /* Return to normal size on click */
+}
+
+/* History list and table */
+.history-list table {
+  width: 90%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow around the table */
+}
+
+.history-list th, .history-list td {
+  padding: 15px;
+  border: 1px solid #e5e5e5;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.history-list th {
+  background-color: #f1f1f1;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.history-list td {
+  background-color: white;
+  color: #555;
+}
+
+.history-list tr:hover {
+  background-color: #f9f9f9; /* Row hover effect */
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.pagination span {
+  margin: 0 15px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+/* For "No history available" text */
+p {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #777;
+  margin: 20px 0;
+}
+
+.generate-pdf {
+  padding: 12px 24px;
+  margin-top: 20px;
+  cursor: pointer;
+  background-color: #28a745;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.generate-pdf:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.generate-pdf:hover:not(:disabled) {
+  background-color: #218838;
+}

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import DatePicker from 'react-datepicker'; // Date Picker Component
-import 'react-datepicker/dist/react-datepicker.css'; 
-import '../styles/OrderHistory.css'; // Import your custom CSS for styling
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import '../styles/OrderHistory.css';
+import Navbar2 from '../components/Navbar2';
 
 const OrderHistory = () => {
   const [historyType, setHistoryType] = useState('purchase'); // Default to 'purchase'
@@ -11,6 +14,7 @@ const OrderHistory = () => {
   const [currentPage, setCurrentPage] = useState(1); // Current page
   const [entriesPerPage] = useState(7); // Change entries per page to 7
   const [searchQuery, setSearchQuery] = useState(''); // Search query state
+  const [selectedEntries, setSelectedEntries] = useState([]); // To track selected rows
 
   // Fetch purchase or sales history based on the selected history type
   const fetchHistory = async () => {
@@ -97,7 +101,49 @@ const OrderHistory = () => {
     }
   };
 
+  // Handle checkbox selection
+  const handleSelectEntry = (entry) => {
+    const isSelected = selectedEntries.find(item => item._id === entry._id);
+    if (isSelected) {
+      // Remove from selected if already selected
+      setSelectedEntries(selectedEntries.filter(item => item._id !== entry._id));
+    } else {
+      // Add to selected entries
+      setSelectedEntries([...selectedEntries, entry]);
+    }
+  };
+
+  // Generate PDF with selected entries
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    doc.text('Order History Report', 20, 20);
+
+    const dataForPDF = selectedEntries.map(item => [
+      historyType === 'purchase' ? item.vendorName : item.customerName,
+      item.itemName,
+      historyType === 'purchase' ? item.purchaseQuantity : item.quantity,
+      item.amount,
+      new Date(item.date).toLocaleDateString()
+    ]);
+
+    doc.autoTable({
+      head: [[
+        historyType === 'purchase' ? 'Vendor Name' : 'Customer Name',
+        'Item Name',
+        'Quantity',
+        'Amount',
+        'Date'
+      ]],
+      body: dataForPDF,
+    });
+
+    doc.save('order-history.pdf');
+  };
+
   return (
+    <>
+    <Navbar2 />
+    
     <div className="container">
       <h2>Order History</h2>
 
@@ -156,6 +202,7 @@ const OrderHistory = () => {
           <table>
             <thead>
               <tr>
+                <th>Select</th> {/* Added for checkboxes */}
                 <th>{historyType === 'purchase' ? 'Vendor Name' : 'Customer Name'}</th>
                 <th>Item Name</th>
                 <th>Quantity</th>
@@ -166,6 +213,13 @@ const OrderHistory = () => {
             <tbody>
               {currentEntries.map((item) => (
                 <tr key={item._id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      onChange={() => handleSelectEntry(item)}
+                      checked={selectedEntries.find(selected => selected._id === item._id) || false}
+                    />
+                  </td>
                   <td>{historyType === 'purchase' ? item.vendorName : item.customerName}</td>
                   <td>{item.itemName}</td>
                   <td>{historyType === 'purchase' ? item.purchaseQuantity : item.quantity}</td>
@@ -178,17 +232,33 @@ const OrderHistory = () => {
         )}
       </div>
 
-      {/* Pagination controls */}
+      {/* Generate PDF button */}
+      <button
+        className="generate-pdf"
+        onClick={generatePDF}
+        disabled={selectedEntries.length === 0}
+      >
+        Generate PDF
+      </button>
+
+      {/* Pagination buttons */}
       <div className="pagination">
-        <button onClick={() => handlePageChange('prev')} disabled={currentPage === 1}>
-          Previous
+        <button
+          onClick={() => handlePageChange('prev')}
+          disabled={currentPage === 1}
+        >
+          Prev
         </button>
-        <span>Page {currentPage} of {totalPages}</span>
-        <button onClick={() => handlePageChange('next')} disabled={currentPage === totalPages}>
+        <span>{currentPage} / {totalPages}</span>
+        <button
+          onClick={() => handlePageChange('next')}
+          disabled={currentPage === totalPages}
+        >
           Next
         </button>
       </div>
     </div>
+    </>
   );
 };
 

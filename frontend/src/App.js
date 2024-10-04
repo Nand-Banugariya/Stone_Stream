@@ -7,6 +7,7 @@ import InventoryPage from './pages/InventoryPage';
 import LoginPage from './pages/LoginPage';
 import ProfileSettings from './components/ProfileSettings';
 import Register from './pages/Register';
+import OrderHistory from './pages/OrderHistory';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} /> 
         <Route path="/register" element={<Register />} /> 
         <Route path="/profile-setting" element={<ProfileSettings />} /> 
+        <Route path="/order-history" element={<OrderHistory />} /> 
         {/* Add other routes as needed */}
       </Routes>
     </Router>

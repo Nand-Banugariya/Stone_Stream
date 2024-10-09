@@ -27,7 +27,7 @@ const salesSchema = new mongoose.Schema({
   paymentMethod: {
     type: String,
     enum: ['Cash', 'Online'],
-    default: 'cash'
+    default: 'Cash'
   },
   itemName: {
     type: String,

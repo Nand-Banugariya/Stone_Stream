@@ -3,25 +3,25 @@ const Vendor = require('../models/purchasemodel'); // Import your Vendor model
 
 exports.addSale = async (req, res) => {
   try {
-    const { Customer_Name, Customer_Email, Customer_Mobile, Payment_Method, Item_Name, Quantity, Amount, Date: saleDate } = req.body;
+    const { customerName, customerEmail, customerMobile, paymentMethod, itemName, quantity, amount, dateOfSale } = req.body;
 
     // Ensure all required fields are provided
-    if (!Customer_Name || !Customer_Email || !Item_Name || !Quantity || !Amount || !Customer_Mobile) {
+    if (!customerName || !customerEmail || !itemName || !quantity || !amount || !customerMobile) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     // Validate the quantity, amount, and date
-    const parsedQuantity = parseInt(Quantity, 10);
-    const parsedAmount = parseFloat(Amount);
-    const parsedDate = saleDate ? new Date(saleDate) : new Date(); // Use the provided date or the current date
+    const parsedQuantity = parseInt(quantity, 10);
+    const parsedAmount = parseFloat(amount);
+    const parsedDate = dateOfSale ? new Date(dateOfSale) : new Date();
 
     if (isNaN(parsedQuantity) || isNaN(parsedAmount) || isNaN(parsedDate.getTime())) {
       return res.status(400).json({ message: 'Invalid data format for quantity, amount, or date' });
     }
 
-    // Find vendor records for the item being sold, skipping entries with 0 quantity
+    // Find vendor records for the item being sold
     let remainingQuantity = parsedQuantity;
-    const vendors = await Vendor.find({ itemName: Item_Name, remainingQuantity: { $gt: 0 } }).sort({ dateOfPurchase: 1 }); // Sort by date to use oldest stock first
+    const vendors = await Vendor.find({ itemName, remainingQuantity: { $gt: 0 } }).sort({ dateOfPurchase: 1 });
 
     // Check if there's sufficient quantity available in total
     const totalAvailableQuantity = vendors.reduce((acc, vendor) => acc + vendor.remainingQuantity, 0);
@@ -41,43 +41,29 @@ exports.addSale = async (req, res) => {
         vendor.remainingQuantity = 0; // Vendor's stock depleted
       }
 
-      await vendor.save(); // Save updated vendor record
+      // Save updated vendor record
+      await vendor.save();
     }
 
     // Create and save the sale data in the Sale collection
     const sale = new Sale({
-      customerName: Customer_Name,
-      customerEmail: Customer_Email,
-      customerMobile: Customer_Mobile, // Include this field in the Sale model as well
-      paymentMethod: Payment_Method,
-      itemName: Item_Name,
-      quantity: parsedQuantity,
+      customerName,
+      customerEmail,
+      customerMobile,
+      paymentMethod,
+      itemName,
+      quantity: parsedQuantity, // Ensure this matches your Sale model
       amount: parsedAmount,
-      date: parsedDate
+      date: parsedDate // Use 'date' to match your Sale model
     });
 
+    // Save the sale data
     await sale.save();
 
-    // Update remaining quantity in Vendor collection
-    const vendors = await Vendor.find({ itemName: Item_Name, remainingQuantity: { $gt: 0 } }).sort({ dateOfPurchase: 1 });
+    res.status(201).json({ message: 'Sale data stored successfully and stock updated' });
 
-    let remainingQuantityToSubtract = parsedQuantity;
-
-    for (let vendor of vendors) {
-      if (vendor.remainingQuantity >= remainingQuantityToSubtract) {
-        vendor.remainingQuantity -= remainingQuantityToSubtract;
-        await vendor.save();
-        break;
-      } else {
-        remainingQuantityToSubtract -= vendor.remainingQuantity;
-        vendor.remainingQuantity = 0;
-        await vendor.save();
-      }
-    }
-
-    res.status(201).json({ message: 'Sale added successfully', sale });
   } catch (error) {
-    console.error('Error adding sale data:', error.message, error.stack);
-    res.status(500).json({ message: 'Error processing request', error: error.message });
+    console.error('Error adding sale data:', error);
+    res.status(500).json({ message: 'Error processing request', error });
   }
 };

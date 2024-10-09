@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import ProfileSettings from './components/ProfileSettings';
 import Register from './pages/Register';
 import OrderHistory from './pages/OrderHistory';
+import Invoice from './pages/Invoice';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/register" element={<Register />} /> 
         <Route path="/profile-setting" element={<ProfileSettings />} /> 
         <Route path="/order-history" element={<OrderHistory />} /> 
+        <Route path="/invoice" element={<Invoice />} /> 
         {/* Add other routes as needed */}
       </Routes>
     </Router>

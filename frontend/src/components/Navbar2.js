@@ -29,7 +29,7 @@ const Navbar2 = () => {
                 <div className="profile-section">
                     <FaUserCircle className="profile-icon" />
                     <div className="profile-details">
-                        <h4>John Doe</h4> {/* Username */}
+                        <h4>Harshil</h4> {/* Username */}
                         <Link to="/profile-setting">Profile Settings</Link> {/* Link to profile settings */}
                     </div>
                 </div>

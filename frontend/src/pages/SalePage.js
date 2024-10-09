@@ -142,8 +142,8 @@ const SalePage = () => {
                 onChange={handleChange}
                 required
               >
-                <option value="cash">Cash</option>
-                <option value="online">Online</option>
+                <option value="Cash">Cash</option>
+                <option value="Online">Online</option>
               </select>
               {formErrors.paymentMethod && (
                 <span className="error">{formErrors.paymentMethod}</span>

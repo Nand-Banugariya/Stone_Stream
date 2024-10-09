@@ -16,11 +16,11 @@ const Navbar = () => {
         <li><Link to="/dashboard">Dashboard</Link></li>
         <li><Link to="/invoice">Invoice</Link></li>
       </ul>
-      <div className="navbar-icons">
+      {/* <div className="navbar-icons">
         <i className="icon search-icon">🔍</i>
         <i className="icon profile-icon">👤</i>
         <i className="icon favorites-icon">❤️</i>
-      </div>
+      </div> */}
     </nav>
   );
 };

@@ -17,6 +17,7 @@ const SalePage = () => {
 
   const [formErrors, setFormErrors] = useState({});
   const [submissionError, setSubmissionError] = useState(""); // For error handling
+  const [isSubmitting, setIsSubmitting] = useState(false); // Loader state
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,14 +42,29 @@ const SalePage = () => {
 
   const validateForm = () => {
     const errors = {};
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const mobilePattern = /^[0-9]{10}$/;
+
     if (!formData.customerName) errors.customerName = "Customer Name is required";
-    if (!formData.customerEmail) errors.customerEmail = "Customer Email is required";
-    if (!formData.customerMobile) errors.customerMobile = "Customer Mobile is required";
+    if (!formData.customerEmail || !emailPattern.test(formData.customerEmail)) {
+      errors.customerEmail = "Valid Customer Email is required";
+    }
+    if (!formData.customerMobile || !mobilePattern.test(formData.customerMobile)) {
+      errors.customerMobile = "Valid 10-digit Mobile is required";
+    }
     if (!formData.paymentMethod) errors.paymentMethod = "Payment Method is required";
     if (!formData.itemName) errors.itemName = "Item Name is required";
-    if (!formData.quantity) errors.quantity = "Quantity is required";
+    if (!formData.quantity || formData.quantity <= 0) {
+      errors.quantity = "Valid Quantity is required";
+    }
     if (!formData.amount) errors.amount = "Amount is required";
     if (!formData.dateOfSale) errors.dateOfSale = "Date of Sale is required";
+    // Future Date Validation
+    const today = new Date().toISOString().split('T')[0];
+    if (formData.dateOfSale && formData.dateOfSale > today) {
+      errors.dateOfSale = "Date of Sale cannot be in the future";
+    }
+
     return errors;
   };
 
@@ -59,6 +75,7 @@ const SalePage = () => {
       setFormErrors(errors);
       setSubmissionError(""); // Clear any previous error
     } else {
+      setIsSubmitting(true); // Show loader
       try {
         const response = await axios.post("http://localhost:5000/api/sales", formData);
         console.log("Sale Data Submitted:", response.data);
@@ -68,7 +85,7 @@ const SalePage = () => {
           customerName: "",
           customerEmail: "",
           customerMobile: "",
-          paymentMethod: "cash", // Reset to default payment method
+          paymentMethod: "Cash", // Reset to default payment method
           itemName: "",
           quantity: "",
           amount: "",
@@ -83,6 +100,8 @@ const SalePage = () => {
         } else {
           setSubmissionError("Error submitting sale data. Please try again.");
         }
+      } finally {
+        setIsSubmitting(false); // Hide loader
       }
     }
   };
@@ -94,6 +113,7 @@ const SalePage = () => {
         <div className="sale-container">
           <h2>Sale Details</h2>
           <form onSubmit={handleSubmit} className="sale-form">
+            {submissionError && <div className="form-error">{submissionError}</div>} {/* Display overall error */}
             <div className="form-group">
               <label>Customer Name</label>
               <input
@@ -142,8 +162,8 @@ const SalePage = () => {
                 onChange={handleChange}
                 required
               >
-                <option value="cash">Cash</option>
-                <option value="online">Online</option>
+                <option value="Cash">Cash</option>
+                <option value="Online">Online</option>
               </select>
               {formErrors.paymentMethod && (
                 <span className="error">{formErrors.paymentMethod}</span>
@@ -201,10 +221,9 @@ const SalePage = () => {
                 <span className="error">{formErrors.dateOfSale}</span>
               )}
             </div>
-            <button type="submit" className="submit-btn-s">
-              Submit
+            <button type="submit" className="submit-btn-s" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
-            {submissionError && <span className="error">{submissionError}</span>} {/* Display submission error */}
           </form>
         </div>
       </div>

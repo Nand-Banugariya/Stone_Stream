@@ -54,7 +54,7 @@ const HomePage = () => {
       <Navbar />
       <div className="homepage-container">
         <div className="homepage-overview">
-          <h1>An Inventory Management System</h1>
+          <h1>An Inventory Management Website</h1>
           <p className="typewriter-text">{visibleText}</p>
           <div className="btns">
             <button onClick={handleRegisterClick}>Register</button>

@@ -5,7 +5,7 @@ import Navbar2 from "../components/Navbar2.js";
 const ProfileSettings = () => {
   // Initial state for user details
   const [userData, setUserData] = useState({
-    name: "Harshil",
+    name: "Nand",
     email: "harshil@gmail.com",
     phone: "1234567890",
     address: "xyz area, surat",

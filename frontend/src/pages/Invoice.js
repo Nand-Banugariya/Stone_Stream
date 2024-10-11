@@ -26,6 +26,7 @@ const Invoice = () => {
   return (
     <>
       <Navbar2 />
+      
       <div className="invoice-container">
         <h2>Previously Downloaded Invoices</h2>
         {invoices.length === 0 ? (

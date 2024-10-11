@@ -1,199 +1,156 @@
-/* Container styling */
+/* OrderHistory.css */
+
 .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
   padding-left: 300px;
-  padding-bottom: 10px;
-  background-color: #f4f6f9; /* Softer background for a clean look */
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow-y: auto;
 }
 
-/* Header styling */
-/* h2 {
-  text-align: center;
-  margin-bottom: 20px;
+h2 {
+  font-size: 2rem;
   color: #333;
-  font-size: 2.2rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-} */
-
-/* Date filter section */
-.date-filter {
-  margin-bottom: 20px;
-  text-align: center;
+  margin-bottom: 1.5rem;
 }
 
-.date-filter label {
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin-right: 10px;
-}
-
-.react-datepicker-wrapper {
-  display: inline-block;
-  width: auto;
-}
-
-.react-datepicker__input-container input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
-}
-
-/* Search bar */
+.date-filter,
 .search-bar {
-  margin-bottom: 20px;
-  text-align: center;
+  margin-bottom: 1rem;
 }
 
-.search-bar input {
-  padding: 10px;
-  width: 300px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 1rem;
-  transition: box-shadow 0.3s ease-in-out;
+.date-filter label,
+.search-bar label {
+  margin-right: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 5px;
 }
 
-.search-bar input:focus {
-  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5); /* Subtle blue glow on focus */
-  outline: none;
-}
 
-/* Button group for toggling Purchase/Sales history */
 .button-group {
   display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .button-group button {
-  padding: 12px 24px;
-  margin: 0 10px;
-  cursor: pointer;
-  background-color: #007bff;
+  padding: 0.5rem 1rem;
   border: none;
-  border-radius: 8px;
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.3s, transform 0.2s;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .button-group button.active {
-  background-color: #0056b3; /* Darker blue for active button */
-  transform: scale(1.05); /* Slightly enlarges the active button */
+  background-color: #007bff;
+  color: white;
 }
 
-.button-group button:hover {
-  background-color: #0056b3;
-}
-
-.button-group button:active {
-  transform: scale(1); /* Return to normal size on click */
-}
-
-/* History list and table */
-.history-list table {
-  width: 90%;
-  border-collapse: collapse;
-  margin: 0 auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow around the table */
-}
-
-.history-list th, .history-list td {
-  padding: 15px;
-  border: 1px solid #e5e5e5;
-  text-align: center;
-  font-size: 1rem;
-}
-
-.history-list th {
-  background-color: #f1f1f1;
-  color: #333;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 600;
-}
-
-.history-list td {
+.history-list {
   background-color: white;
-  color: #555;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
 }
 
-.history-list tr:hover {
-  background-color: #f9f9f9; /* Row hover effect */
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-/* Pagination */
+th, td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  color: #495057;
+}
+
+tr:hover {
+  background-color: #f8f9fa;
+}
+
+.availability {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.generate-pdf {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.generate-pdf:hover {
+  background-color: #218838;
+}
+
+.generate-pdf:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 1rem;
 }
 
 .pagination button {
-  padding: 10px 20px;
-  margin: 0 5px;
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
+  border: 1px solid #007bff;
+  background-color: white;
+  color: #007bff;
+  border-radius: 4px;
   cursor: pointer;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 5px;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.3s;
-}
-
-.pagination button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+  transition: all 0.3s ease;
 }
 
 .pagination button:hover:not(:disabled) {
-  background-color: #0056b3;
-}
-
-.pagination span {
-  margin: 0 15px;
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: #333;
-}
-
-/* For "No history available" text */
-p {
-  text-align: center;
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #777;
-  margin: 20px 0;
-}
-
-.generate-pdf {
-  padding: 12px 24px;
-  margin-top: 20px;
-  cursor: pointer;
-  background-color: #28a745;
-  border: none;
-  border-radius: 8px;
+  background-color: #007bff;
   color: white;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.3s;
 }
 
-.generate-pdf:disabled {
-  background-color: #ccc;
+.pagination button:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.generate-pdf:hover:not(:disabled) {
-  background-color: #218838;
+.pagination span {
+  margin: 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .button-group {
+    flex-direction: column;
+  }
+
+  .date-filter,
+  .search-bar {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .date-filter label,
+  .search-bar label {
+    margin-bottom: 0.5rem;
+  }
+
+  th, td {
+    padding: 0.75rem 0.5rem;
+  }
 }

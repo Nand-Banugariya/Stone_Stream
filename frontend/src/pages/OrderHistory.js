@@ -299,7 +299,7 @@ const OrderHistory = () => {
         {/* Table to display the history data */}
         <div className="history-list">
           {currentEntries.length === 0 ? (
-            <p>No history available</p>
+            <p className="availability">No history available</p>
           ) : (
             <table>
               <thead>

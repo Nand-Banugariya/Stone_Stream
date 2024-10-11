@@ -5,7 +5,7 @@ exports.createItem = async (req, res) => {
   const { name, description, amount, image } = req.body;
 
   // Log the request body to see what data is being received
-  console.log("Request data:", req.body);
+  // console.log("Request data:", req.body);
 
   // Validate input fields
   if (!name || !description || !amount || !image) {

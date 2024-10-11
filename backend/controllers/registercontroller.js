@@ -52,14 +52,14 @@ const registerUser = async (req, res) => {
       shopName,
       address,
       photo: photoUrl,
-      session_id: sessionId, // Store the generated session_id
+       // Store the generated session_id
     });
 
     await newUser.save();
 
     res.status(201).json({
       message: 'User registered successfully',
-      session_id: sessionId, // Optionally return session_id in the response
+     // Optionally return session_id in the response
     });
   } catch (error) {
     console.error(error);

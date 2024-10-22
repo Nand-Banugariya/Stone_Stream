@@ -4,17 +4,17 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import "../styles/OrderHistory.css";
+import styled from "styled-components";
 import Navbar2 from "../components/Navbar2";
 
 const OrderHistory = () => {
-  const [historyType, setHistoryType] = useState("purchase"); // Default to 'purchase'
+  const [historyType, setHistoryType] = useState("purchase");
   const [historyData, setHistoryData] = useState([]);
-  const [startDate, setStartDate] = useState(null); // Date filter
-  const [currentPage, setCurrentPage] = useState(1); // Current page
-  const [entriesPerPage] = useState(7); // Change entries per page to 7
-  const [searchQuery, setSearchQuery] = useState(""); // Search query state
-  const [selectedEntries, setSelectedEntries] = useState([]); // To track selected rows
+  const [startDate, setStartDate] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [entriesPerPage] = useState(7);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedEntries, setSelectedEntries] = useState([]);
 
   // Fetch purchase or sales history based on the selected history type
   const fetchHistory = async () => {
@@ -243,73 +243,66 @@ const OrderHistory = () => {
   };
 
   return (
-    <>
+    <PageWrapper>
       <Navbar2 />
+      <ContentWrapper>
+        <Header>Order History</Header>
 
-      <div className="container">
-        <h2>Order History</h2>
+        <FilterSection>
+          <DateFilterWrapper>
+            <label>Filter by Date: </label>
+            <StyledDatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              placeholderText="Select a date"
+              isClearable
+            />
+          </DateFilterWrapper>
 
-        {/* Date Picker for filtering by date */}
-        <div className="date-filter">
-          <label>Filter by Date: </label>
-          <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            placeholderText="Select a date"
-            isClearable
-          />
-        </div>
+          <SearchWrapper>
+            <label>Search: </label>
+            <SearchInput
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Search by Customer/Item Name"
+            />
+          </SearchWrapper>
+        </FilterSection>
 
-        {/* Search bar for filtering by customer name or item name */}
-        <div className="search-bar">
-          <label>Search: </label>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1); // Reset to first page on search
-            }}
-            placeholder="Search by Customer/Item Name"
-          />
-        </div>
-
-        {/* Buttons to switch between Purchase and Sales history */}
-        <div className="button-group">
-          <button
+        <ButtonGroup>
+          <HistoryButton
             onClick={() => {
               setHistoryType("purchase");
-              setCurrentPage(1); // Reset to first page on type change
+              setCurrentPage(1);
             }}
-            className={historyType === "purchase" ? "active" : ""}
+            active={historyType === "purchase"}
           >
             Purchase History
-          </button>
-          <button
+          </HistoryButton>
+          <HistoryButton
             onClick={() => {
               setHistoryType("sales");
-              setCurrentPage(1); // Reset to first page on type change
+              setCurrentPage(1);
             }}
-            className={historyType === "sales" ? "active" : ""}
+            active={historyType === "sales"}
           >
             Sales History
-          </button>
-        </div>
+          </HistoryButton>
+        </ButtonGroup>
 
-        {/* Table to display the history data */}
-        <div className="history-list">
+        <TableWrapper>
           {currentEntries.length === 0 ? (
-            <p className="availability">No history available</p>
+            <NoDataMessage>No history available</NoDataMessage>
           ) : (
-            <table>
+            <StyledTable>
               <thead>
                 <tr>
-                  <th>Select</th> {/* Added for checkboxes */}
-                  <th>
-                    {historyType === "purchase"
-                      ? "Vendor Name"
-                      : "Customer Name"}
-                  </th>
+                  <th>Select</th>
+                  <th>{historyType === "purchase" ? "Vendor Name" : "Customer Name"}</th>
                   <th>Item Name</th>
                   <th>Quantity</th>
                   <th>Amount</th>
@@ -320,66 +313,228 @@ const OrderHistory = () => {
                 {currentEntries.map((item) => (
                   <tr key={item._id}>
                     <td>
-                      <input
+                      <Checkbox
                         type="checkbox"
                         onChange={() => handleSelectEntry(item)}
-                        checked={
-                          selectedEntries.find(
-                            (selected) => selected._id === item._id
-                          ) || false
-                        }
+                        checked={selectedEntries.find((selected) => selected._id === item._id) || false}
                       />
                     </td>
-                    <td>
-                      {historyType === "purchase"
-                        ? item.vendorName
-                        : item.customerName}
-                    </td>
+                    <td>{historyType === "purchase" ? item.vendorName : item.customerName}</td>
                     <td>{item.itemName}</td>
-                    <td>
-                      {historyType === "purchase"
-                        ? item.purchaseQuantity
-                        : item.quantity}
-                    </td>
+                    <td>{historyType === "purchase" ? item.purchaseQuantity : item.quantity}</td>
                     <td>{item.amount}</td>
                     <td>{new Date(item.date).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </StyledTable>
           )}
-        </div>
+        </TableWrapper>
 
-        {/* Generate PDF button */}
-        <button
-          className="generate-pdf"
-          onClick={generatePDF}
-          disabled={selectedEntries.length === 0}
-        >
-          Generate PDF
-        </button>
+        <ActionSection>
+          <GeneratePDFButton
+            onClick={generatePDF}
+            disabled={selectedEntries.length === 0}
+          >
+            Generate PDF
+          </GeneratePDFButton>
 
-        {/* Pagination buttons */}
-        <div className="pagination">
-          <button
-            onClick={() => handlePageChange("prev")}
-            disabled={currentPage === 1}
-          >
-            Prev
-          </button>
-          <span>
-            {currentPage} / {totalPages}
-          </span>
-          <button
-            onClick={() => handlePageChange("next")}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
-      </div>
-    </>
+          <PaginationWrapper>
+            <PaginationButton
+              onClick={() => handlePageChange("prev")}
+              disabled={currentPage === 1}
+            >
+              Prev
+            </PaginationButton>
+            <PageInfo>
+              {currentPage} / {totalPages}
+            </PageInfo>
+            <PaginationButton
+              onClick={() => handlePageChange("next")}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </PaginationButton>
+          </PaginationWrapper>
+        </ActionSection>
+      </ContentWrapper>
+    </PageWrapper>
   );
 };
+
+// Styled components
+const PageWrapper = styled.div`
+  display: flex;
+  min-height: 100vh;
+`;
+
+const ContentWrapper = styled.div`
+  flex-grow: 1;
+  padding: 2rem;
+  margin-left: 250px; // Adjust based on your Navbar2 width
+  background-color: #f5f7fa;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    padding: 1rem;
+  }
+`;
+
+const Header = styled.h2`
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+`;
+
+const FilterSection = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+`;
+
+const DateFilterWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const StyledDatePicker = styled(DatePicker)`
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+`;
+
+const SearchWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const SearchInput = styled.input`
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 250px;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+`;
+
+const HistoryButton = styled.button`
+  padding: 0.5rem 1rem;
+  background-color: ${(props) => (props.active ? "#3498db" : "#ecf0f1")};
+  color: ${(props) => (props.active ? "#ffffff" : "#2c3e50")};
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: ${(props) => (props.active ? "#2980b9" : "#bdc3c7")};
+  }
+`;
+
+const TableWrapper = styled.div`
+  overflow-x: auto;
+  margin-bottom: 2rem;
+`;
+
+const StyledTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+  }
+
+  th {
+    background-color: #3498db;
+    color: #ffffff;
+    font-weight: bold;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f8f9fa;
+  }
+
+  tr:hover {
+    background-color: #e9ecef;
+  }
+`;
+
+const Checkbox = styled.input`
+  cursor: pointer;
+`;
+
+const NoDataMessage = styled.p`
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+`;
+
+const ActionSection = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+`;
+
+const GeneratePDFButton = styled.button`
+  padding: 0.75rem 1.5rem;
+  background-color: #27ae60;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #2ecc71;
+  }
+
+  &:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+  }
+`;
+
+const PaginationWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const PaginationButton = styled.button`
+  padding: 0.5rem 1rem;
+  background-color: #3498db;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #2980b9;
+  }
+
+  &:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+  }
+`;
+
+const PageInfo = styled.span`
+  font-weight: bold;
+  color: #2c3e50;
+`;
 
 export default OrderHistory;

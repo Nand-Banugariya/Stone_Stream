@@ -1,14 +1,14 @@
 import React, { useState } from "react";
+import axios from "axios";
+import styled from 'styled-components';
 import Navbar2 from "../components/Navbar2.js";
-import "../styles/SalePage.css";
-import axios from "axios"; // Import Axios
 
 const SalePage = () => {
   const [formData, setFormData] = useState({
     customerName: "",
     customerEmail: "",
     customerMobile: "",
-    paymentMethod: "Cash", // Default to 'cash' or adjust as necessary
+    paymentMethod: "Cash",
     itemName: "",
     quantity: "",
     amount: "",
@@ -16,8 +16,8 @@ const SalePage = () => {
   });
 
   const [formErrors, setFormErrors] = useState({});
-  const [submissionError, setSubmissionError] = useState(""); // For error handling
-  const [isSubmitting, setIsSubmitting] = useState(false); // Loader state
+  const [submissionError, setSubmissionError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -59,7 +59,6 @@ const SalePage = () => {
     }
     if (!formData.amount) errors.amount = "Amount is required";
     if (!formData.dateOfSale) errors.dateOfSale = "Date of Sale is required";
-    // Future Date Validation
     const today = new Date().toISOString().split('T')[0];
     if (formData.dateOfSale && formData.dateOfSale > today) {
       errors.dateOfSale = "Date of Sale cannot be in the future";
@@ -73,26 +72,24 @@ const SalePage = () => {
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
-      setSubmissionError(""); // Clear any previous error
+      setSubmissionError("");
     } else {
-      setIsSubmitting(true); // Show loader
+      setIsSubmitting(true);
       try {
         const response = await axios.post("http://localhost:5000/api/sales", formData);
         console.log("Sale Data Submitted:", response.data);
-
-        // Reset form after successful submission
         setFormData({
           customerName: "",
           customerEmail: "",
           customerMobile: "",
-          paymentMethod: "Cash", // Reset to default payment method
+          paymentMethod: "Cash",
           itemName: "",
           quantity: "",
           amount: "",
           dateOfSale: "",
         });
         setFormErrors({});
-        setSubmissionError(""); // Clear any previous error
+        setSubmissionError("");
       } catch (error) {
         console.error("Error submitting sale data:", error);
         if (error.response) {
@@ -101,134 +98,240 @@ const SalePage = () => {
           setSubmissionError("Error submitting sale data. Please try again.");
         }
       } finally {
-        setIsSubmitting(false); // Hide loader
+        setIsSubmitting(false);
       }
     }
   };
 
   return (
-    <>
+    <PageLayout>
       <Navbar2 />
-      <div className="page-wrapper">
-        <div className="sale-container">
-          <h2>Sale Details</h2>
-          <form onSubmit={handleSubmit} className="sale-form">
-            {submissionError && <div className="form-error">{submissionError}</div>} {/* Display overall error */}
-            <div className="form-group">
-              <label>Customer Name</label>
-              <input
-                type="text"
-                name="customerName"
-                value={formData.customerName}
-                onChange={handleChange}
-                required
-              />
-              {formErrors.customerName && (
-                <span className="error">{formErrors.customerName}</span>
-              )}
-            </div>
-            <div className="form-group">
-              <label>Customer Email</label>
-              <input
-                type="email"
-                name="customerEmail"
-                value={formData.customerEmail}
-                onChange={handleChange}
-                required
-              />
-              {formErrors.customerEmail && (
-                <span className="error">{formErrors.customerEmail}</span>
-              )}
-            </div>
-            <div className="form-group">
-              <label>Customer Mobile</label>
-              <input
-                type="text"
-                name="customerMobile"
-                value={formData.customerMobile}
-                onChange={handleChange}
-                pattern="[0-9]{10}"
-                required
-              />
-              {formErrors.customerMobile && (
-                <span className="error">{formErrors.customerMobile}</span>
-              )}
-            </div>
-            <div className="form-group">
-              <label>Payment Method</label>
-              <select
-                name="paymentMethod"
-                value={formData.paymentMethod}
-                onChange={handleChange}
-                required
-              >
-                <option value="Cash">Cash</option>
-                <option value="Online">Online</option>
-              </select>
-              {formErrors.paymentMethod && (
-                <span className="error">{formErrors.paymentMethod}</span>
-              )}
-            </div>
-            <div className="form-group">
-              <label>Item Name</label>
-              <input
-                type="text"
-                name="itemName"
-                value={formData.itemName}
-                onChange={handleChange}
-                required
-              />
-              {formErrors.itemName && (
-                <span className="error">{formErrors.itemName}</span>
-              )}
-            </div>
-            <div className="form-group">
-              <label>Quantity</label>
-              <input
-                type="number"
-                name="quantity"
-                value={formData.quantity}
-                onChange={handleChange}
-                required
-              />
-              {formErrors.quantity && (
-                <span className="error">{formErrors.quantity}</span>
-              )}
-            </div>
-            <div className="form-group">
-              <label>Amount</label>
-              <input
-                type="text"
-                name="amount"
-                value={formData.amount}
-                onChange={handleChange}
-                required
-              />
-              {formErrors.amount && (
-                <span className="error">{formErrors.amount}</span>
-              )}
-            </div>
-            <div className="form-group">
-              <label>Date of Sale</label>
-              <input
-                type="date"
-                name="dateOfSale"
-                value={formData.dateOfSale}
-                onChange={handleChange}
-                required
-              />
-              {formErrors.dateOfSale && (
-                <span className="error">{formErrors.dateOfSale}</span>
-              )}
-            </div>
-            <button type="submit" className="submit-btn-s" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit"}
-            </button>
-          </form>
-        </div>
-      </div>
-    </>
+      <ContentWrapper>
+        <SaleContainer>
+          <Header>Sale Details</Header>
+          {submissionError && <ErrorMessage>{submissionError}</ErrorMessage>}
+          <SaleForm onSubmit={handleSubmit}>
+            <FormRow>
+              <FormGroup>
+                <Label>Customer Name</Label>
+                <Input
+                  type="text"
+                  name="customerName"
+                  value={formData.customerName}
+                  onChange={handleChange}
+                  required
+                />
+                {formErrors.customerName && <ErrorMessage>{formErrors.customerName}</ErrorMessage>}
+              </FormGroup>
+              <FormGroup>
+                <Label>Customer Email</Label>
+                <Input
+                  type="email"
+                  name="customerEmail"
+                  value={formData.customerEmail}
+                  onChange={handleChange}
+                  required
+                />
+                {formErrors.customerEmail && <ErrorMessage>{formErrors.customerEmail}</ErrorMessage>}
+              </FormGroup>
+            </FormRow>
+
+            <FormRow>
+              <FormGroup>
+                <Label>Customer Mobile</Label>
+                <Input
+                  type="text"
+                  name="customerMobile"
+                  value={formData.customerMobile}
+                  onChange={handleChange}
+                  pattern="[0-9]{10}"
+                  required
+                />
+                {formErrors.customerMobile && <ErrorMessage>{formErrors.customerMobile}</ErrorMessage>}
+              </FormGroup>
+              <FormGroup>
+                <Label>Payment Method</Label>
+                <Select
+                  name="paymentMethod"
+                  value={formData.paymentMethod}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="Cash">Cash</option>
+                  <option value="Online">Online</option>
+                </Select>
+                {formErrors.paymentMethod && <ErrorMessage>{formErrors.paymentMethod}</ErrorMessage>}
+              </FormGroup>
+            </FormRow>
+
+            <FormRow>
+              <FormGroup>
+                <Label>Item Name</Label>
+                <Input
+                  type="text"
+                  name="itemName"
+                  value={formData.itemName}
+                  onChange={handleChange}
+                  required
+                />
+                {formErrors.itemName && <ErrorMessage>{formErrors.itemName}</ErrorMessage>}
+              </FormGroup>
+              <FormGroup>
+                <Label>Quantity</Label>
+                <Input
+                  type="number"
+                  name="quantity"
+                  value={formData.quantity}
+                  onChange={handleChange}
+                  required
+                />
+                {formErrors.quantity && <ErrorMessage>{formErrors.quantity}</ErrorMessage>}
+              </FormGroup>
+            </FormRow>
+
+            <FormRow>
+              <FormGroup>
+                <Label>Amount</Label>
+                <Input
+                  type="text"
+                  name="amount"
+                  value={formData.amount}
+                  onChange={handleChange}
+                  required
+                />
+                {formErrors.amount && <ErrorMessage>{formErrors.amount}</ErrorMessage>}
+              </FormGroup>
+              <FormGroup>
+                <Label>Date of Sale</Label>
+                <Input
+                  type="date"
+                  name="dateOfSale"
+                  value={formData.dateOfSale}
+                  onChange={handleChange}
+                  required
+                />
+                {formErrors.dateOfSale && <ErrorMessage>{formErrors.dateOfSale}</ErrorMessage>}
+              </FormGroup>
+            </FormRow>
+
+            <SubmitButton type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit Sale"}
+            </SubmitButton>
+          </SaleForm>
+        </SaleContainer>
+      </ContentWrapper>
+    </PageLayout>
   );
 };
+
+const PageLayout = styled.div`
+  display: flex;
+  min-height: 100vh;
+`;
+
+const ContentWrapper = styled.div`
+  flex-grow: 1;
+  padding: 2rem;
+  margin-left: 250px; // Adjust based on your Navbar2 width
+  background-color: #f5f7fa;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    padding: 1rem;
+  }
+`;
+
+const SaleContainer = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+`;
+
+const Header = styled.h2`
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 2rem;
+`;
+
+const SaleForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+const FormRow = styled.div`
+  display: flex;
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+`;
+
+const Label = styled.label`
+  margin-bottom: 0.5rem;
+  color: #34495e;
+  font-weight: bold;
+`;
+
+const Input = styled.input`
+  padding: 0.75rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  font-size: 1rem;
+
+  &:focus {
+    outline: none;
+    border-color: #3498db;
+  }
+`;
+
+const Select = styled.select`
+  padding: 0.75rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: white;
+
+  &:focus {
+    outline: none;
+    border-color: #3498db;
+  }
+`;
+
+const ErrorMessage = styled.span`
+  color: #e74c3c;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+`;
+
+const SubmitButton = styled.button`
+  background-color: #3498db;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #2980b9;
+  }
+
+  &:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+  }
+`;
 
 export default SalePage;

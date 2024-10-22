@@ -9,6 +9,7 @@ import ProfileSettings from './components/ProfileSettings';
 import Register from './pages/Register';
 import OrderHistory from './pages/OrderHistory';
 import Invoice from './pages/Invoice';
+import Dashboard from './pages/DashBoard';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/profile-setting" element={<ProfileSettings />} /> 
         <Route path="/order-history" element={<OrderHistory />} /> 
         <Route path="/invoice" element={<Invoice />} /> 
+        <Route path="/dashboard" element={<Dashboard />} />
         {/* Add other routes as needed */}
       </Routes>
     </Router>

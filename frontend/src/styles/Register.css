@@ -88,3 +88,35 @@
     max-width: 400px;
     object-fit: cover;
   }
+
+
+  /* Slide down animation for the alert */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Styling for alerts with slide down effect */
+.slide-down {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  z-index: 1050;
+  animation: slideDown 0.5s ease-out;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Ensure the alert fades out smoothly when closed */
+.slide-down.hide {
+  opacity: 0;
+}

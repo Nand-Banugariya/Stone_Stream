@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar2 from '../components/Navbar2.js';
 import '../styles/PurchasePage.css';
@@ -16,9 +16,24 @@ const PurchasePage = () => {
         dateOfPurchase: ''
     });
 
+    // State for user data
+    const [userData, setUserData] = useState({
+        userId: '',
+        userEmail: ''
+    });
+
     // State for form errors and submission messages
     const [formErrors, setFormErrors] = useState({});
     const [submitMessage, setSubmitMessage] = useState('');
+
+    // Fetch user data from local storage when the component mounts
+    useEffect(() => {
+        const userId = localStorage.getItem('userId');
+        const userEmail = localStorage.getItem('userEmail');
+        if (userId && userEmail) {
+            setUserData({ userId, userEmail });
+        }
+    }, []);
 
     // Handle input changes and update state
     const handleChange = (e) => {
@@ -54,8 +69,14 @@ const PurchasePage = () => {
             setFormErrors(errors);
         } else {
             try {
+                // Add userId to form data
+                const submissionData = {
+                    ...formData,
+                    userId: userData.userId, // Add userId from local storage
+                };
+
                 // Send data to backend using axios
-                const response = await axios.post('http://localhost:5000/api/purchases', formData);
+                const response = await axios.post('http://localhost:5000/api/purchases', submissionData);
                 console.log('Response from server:', response.data);
                 setSubmitMessage('Form submitted successfully!');
                 

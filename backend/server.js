@@ -8,7 +8,7 @@ const inventoryRoute = require('./routes/inventoryroute'); // Inventory routes
 const orderHistoryRoute = require('./routes/orderhistoryroute'); // Order history routes
 const profileRoute = require('./routes/profileroute'); 
 const dashboardroutes = require('./routes/dashboardroute'); 
-//const pdfRoutes = require("./routes/pdfroute"); // PDF route
+const pdfRoutes = require("./routes/pdfroute"); // PDF route
 const path = require('path');
 const cors = require('cors'); // CORS middleware
 
@@ -32,7 +32,7 @@ app.use('/api', inventoryRoute); // Inventory routes
 app.use('/api/orders', orderHistoryRoute); // Order history routes
 app.use('/api', profileRoute); // Profile update route
 app.use('/api', dashboardroutes); // Dashboard routes
-//app.use("/api/pdf", pdfRoutes); // PDF routes
+app.use("/api/pdf", pdfRoutes); // PDF routes
 
 // 404 Handler
 app.use((req, res) => {

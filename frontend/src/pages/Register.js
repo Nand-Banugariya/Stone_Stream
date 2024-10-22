@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import "../styles/Register.css";
+import React, { useState, useEffect } from "react";
+import "../styles/Register.css"; // Custom styles
 import { useNavigate } from "react-router-dom";
 import RegisterImage from "../assets/register.png";
 import Navbar from "../components/Navbar";
-import axios from 'axios';
+import axios from "axios";
+import "../styles/Register.css"; // Include custom styles
 
 const Register = () => {
   const navigate = useNavigate();
@@ -14,10 +15,22 @@ const Register = () => {
     mobileNo: "",
     email: "",
     password: "",
-    photo: null,
+    image: null,
   });
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    // Auto-hide alerts after 3 seconds
+    if (successMessage || errorMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage("");
+        setErrorMessage("");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, errorMessage]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -27,37 +40,53 @@ const Register = () => {
     });
   };
 
-  const handlePhotoChange = (e) => {
-    setFormData({
-      ...formData,
-      photo: e.target.files[0],
-    });
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setFormData((prevData) => ({
+      ...prevData,
+      image: file,
+    }));
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
 
-    // Create a FormData object
-    const data = new FormData();
-    data.append("name", formData.name);
-    data.append("shopName", formData.shopName);
-    data.append("address", formData.address);
-    data.append("mobileNo", formData.mobileNo);
-    data.append("email", formData.email);
-    data.append("password", formData.password);
-    if (formData.photo) {
-      data.append("photo", formData.photo);
+    if (
+      !formData.name ||
+      !formData.shopName ||
+      !formData.address ||
+      !formData.mobileNo ||
+      !formData.email ||
+      !formData.password ||
+      !formData.image
+    ) {
+      setErrorMessage("All fields are required, including the image");
+      return;
     }
 
+    const formDataToSend = new FormData();
+    Object.keys(formData).forEach((key) => {
+      formDataToSend.append(key, formData[key]);
+    });
+
     try {
-      const response = await axios.post('http://localhost:5000/api/register', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      const response = await axios.post(
+        "http://localhost:5000/api/register",
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      });
-      
+      );
+
       if (response.status === 201) {
-        navigate("/login");
+        const token = response.data.token;
+        localStorage.setItem("token", token);
+        setSuccessMessage("You have successfully registered!");
+        setTimeout(() => navigate("/login"), 2000);
       }
     } catch (error) {
       if (error.response) {
@@ -77,6 +106,23 @@ const Register = () => {
         </div>
         <div className="register-form-container">
           <h2 className="register-title">Register</h2>
+
+          {/* Success Alert */}
+          {successMessage && (
+            <div className="alert alert-success slide-down" role="alert">
+              <i className="bi bi-check-circle-fill me-2"></i>
+              {successMessage}
+            </div>
+          )}
+
+          {/* Error Alert */}
+          {errorMessage && (
+            <div className="alert alert-danger slide-down" role="alert">
+              <i className="bi bi-exclamation-triangle-fill me-2"></i>
+              {errorMessage}
+            </div>
+          )}
+
           <form onSubmit={handleRegister}>
             <div className="form-row">
               <div className="form-group">
@@ -159,22 +205,25 @@ const Register = () => {
               </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="photo">Photo</label>
-              <input
-                type="file"
-                id="photo"
-                name="photo"
-                onChange={handlePhotoChange}
-                required
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="image">Profile Image</label>
+                <input
+                  type="file"
+                  id="image"
+                  name="image"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  required
+                />
+              </div>
             </div>
 
             <button type="submit" className="register-button">
               Register
             </button>
           </form>
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
+
           <p className="login-link">
             Already have an account? <a href="/login">Login</a>
           </p>

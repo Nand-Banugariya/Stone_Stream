@@ -1,18 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/ProfileSettings.css";
+import { FaTrashAlt } from "react-icons/fa";
 import Navbar2 from "../components/Navbar2.js";
 
 const ProfileSettings = () => {
-  // Initial state for user details
   const [userData, setUserData] = useState({
-    name: "Nand",
-    email: "harshil@gmail.com",
-    phone: "1234567890",
-    address: "xyz area, surat",
+    name: "",
+    email: "",
+    phone: "",
+    shopName: "",
     image: null,
+    imageUrl: "",
   });
+  const [removeImage, setRemoveImage] = useState(false); // To track image removal
+  const navigate = useNavigate();
 
-  // Handle input changes for text fields
+  // Fetch user data on component mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userId = localStorage.getItem('userId');
+      try {
+        const response = await fetch(`http://localhost:5000/api/profile/${userId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+        const data = await response.json();
+        setUserData({
+          name: data.user.name,
+          email: data.user.email,
+          phone: data.user.mobileNo,
+          shopName: data.user.shopName,
+          imageUrl: data.user.imageUrl || "", // Load existing image URL
+        });
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserData((prevData) => ({
@@ -21,41 +49,88 @@ const ProfileSettings = () => {
     }));
   };
 
-  // Handle file input for profile image
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setUserData((prevData) => ({
       ...prevData,
       image: file,
     }));
+    setRemoveImage(false); // Reset remove flag if a new image is selected
   };
 
-  // Simulate form submission (You would replace this with an API call)
-  const handleSubmit = (e) => {
+  const handleRemoveImage = () => {
+    setUserData((prevData) => ({
+      ...prevData,
+      image: null, // Clear the selected image
+      imageUrl: "", // Clear the image URL from the profile
+    }));
+    setRemoveImage(true); // Set the flag to true to indicate removal
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("User Data:", userData);
-    // You can add the logic here to send data to your backend
+    const userId = localStorage.getItem('userId');
+
+    const formData = new FormData();
+    formData.append('name', userData.name);
+    formData.append('email', userData.email);
+    formData.append('mobileNo', userData.phone);
+    formData.append('shopName', userData.shopName);
+    if (userData.image) {
+      formData.append('image', userData.image); // Add the new image if it exists
+    } else if (removeImage) {
+      formData.append('removeImage', true); // Indicate image removal if flagged
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/profile/${userId}`, {
+        method: 'PUT',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update user data");
+      }
+
+      const updatedUser = await response.json();
+      setUserData((prevData) => ({
+        ...prevData,
+        imageUrl: updatedUser.user.imageUrl, // Update the image URL
+      }));
+
+      console.log("User data updated:", updatedUser);
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
   };
 
   return (
     <>
       <Navbar2 />
-
       <div className="profile-settings-wrapper">
         <div className="profile-settings-container">
-          <h2>Profile Settings</h2>
+          <h2>Profile</h2>
           <form onSubmit={handleSubmit} className="profile-form">
-            {/* Profile Image */}
             <div className="profile-image-section">
-              <img
-                src={
-                  userData.image
-                    ? URL.createObjectURL(userData.image)
-                    : "https://via.placeholder.com/150"
-                }
-                alt="Profile"
-                className="profile-img"
-              />
+              <div className="image-wrapper">
+                <img
+                  src={
+                    userData.image
+                      ? URL.createObjectURL(userData.image)
+                      : userData.imageUrl
+                      ? `http://localhost:5000${userData.imageUrl}`
+                      : "https://via.placeholder.com/150"
+                  }
+                  alt="Profile"
+                  className="profile-img"
+                />
+                {userData.imageUrl && (
+                  <FaTrashAlt
+                    className="remove-icon"
+                    onClick={handleRemoveImage}
+                  />
+                )}
+              </div>
               <input
                 type="file"
                 name="image"
@@ -64,7 +139,6 @@ const ProfileSettings = () => {
               />
             </div>
 
-            {/* Name */}
             <div className="form-group">
               <label>Name:</label>
               <input
@@ -72,10 +146,10 @@ const ProfileSettings = () => {
                 name="name"
                 value={userData.name}
                 onChange={handleInputChange}
+                required
               />
             </div>
 
-            {/* Email */}
             <div className="form-group">
               <label>Email:</label>
               <input
@@ -83,10 +157,10 @@ const ProfileSettings = () => {
                 name="email"
                 value={userData.email}
                 onChange={handleInputChange}
+                required
               />
             </div>
 
-            {/* Phone Number */}
             <div className="form-group">
               <label>Phone Number:</label>
               <input
@@ -97,18 +171,16 @@ const ProfileSettings = () => {
               />
             </div>
 
-            {/* Address */}
             <div className="form-group">
-              <label>Address:</label>
+              <label>Shop Name:</label>
               <input
                 type="text"
-                name="address"
-                value={userData.address}
+                name="shopName"
+                value={userData.shopName}
                 onChange={handleInputChange}
               />
             </div>
 
-            {/* Submit Button */}
             <button type="submit" className="save-button">
               Save Changes
             </button>

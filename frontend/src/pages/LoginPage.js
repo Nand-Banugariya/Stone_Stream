@@ -11,10 +11,30 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Email validation regex pattern
+  const isValidEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true); // Disable button and show loading if needed
-
+    setErrorMessage(""); // Clear previous errors
+    setLoading(true);
+  
+    // Input validation
+    if (!email || !password) {
+      setErrorMessage("Email and password are required.");
+      setLoading(false);
+      return;
+    }
+  
+    if (!isValidEmail(email)) {
+      setErrorMessage("Please enter a valid email.");
+      setLoading(false);
+      return;
+    }
+  
     try {
       const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
@@ -23,23 +43,37 @@ const Login = () => {
         },
         body: JSON.stringify({ email, password }),
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Successful login, redirect to purchase page
+  
+      // Check if the response is successful
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Login failed");
+      }
+  
+      const data = await response.json(); // Parse the JSON response
+  
+      // Ensure the response contains the user _id
+      if (data.user && data.user._id) {
+        // Store user email and _id in localStorage
+        localStorage.setItem('userEmail', data.user.email);
+        localStorage.setItem('userId', data.user._id);
+  
+        
+  
+        // Navigate to the purchase page after successful login
         navigate("/purchase");
       } else {
-        // Set error message from the backend
-        setErrorMessage(data.message);
+        throw new Error("Invalid response from server");
       }
+  
     } catch (error) {
-      console.error('Error:', error);
-      setErrorMessage('An unexpected error occurred. Please try again.');
+      console.error("Error:", error);
+      setErrorMessage(error.message || "An unexpected error occurred. Please try again.");
     } finally {
-      setLoading(false); // Re-enable button after processing
+      setLoading(false); // Stop loading indicator
     }
   };
+  
 
   return (
     <>
@@ -47,7 +81,7 @@ const Login = () => {
       <div className="login-container">
         <div className="login-form-container">
           <h2 className="login-title">Login</h2>
-          {errorMessage && <div className="error-message">{errorMessage}</div>}
+          {errorMessage && <div className="error-message" aria-live="assertive">{errorMessage}</div>}
           <form onSubmit={handleLogin}>
             <div className="form-group">
               <label htmlFor="email">Email</label>
@@ -58,6 +92,7 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
+                disabled={loading} // Disable input while loading
               />
             </div>
             <div className="form-group">
@@ -69,10 +104,11 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 required
+                disabled={loading} // Disable input while loading
               />
             </div>
             <button type="submit" className="login-button" disabled={loading}>
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? "Logging in..." : "Login"}
             </button>
           </form>
           <p className="signup-link">
@@ -88,4 +124,3 @@ const Login = () => {
 };
 
 export default Login;
-

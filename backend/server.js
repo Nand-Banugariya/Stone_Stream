@@ -1,40 +1,51 @@
 const express = require('express');
-const connectDB = require('./database/db');
+const connectDB = require('./database/db'); // Database connection
 const userRoutes = require('./routes/registerroute'); // Registration routes
-const loginRoutes = require('./routes/loginroute'); 
-const purchaseRoute = require('./routes/purchaseroute')
-const salesRoute = require('./routes/salesrouter')
-const inventoryroute = require('./routes/inventoryroute')
-const orderhistoryroute = require('./routes/orderhistoryroute')
-const cors = require('cors');
-const bodyParser = require('body-parser');
-require('dotenv').config();
+const loginRoutes = require('./routes/loginroute'); // Login routes
+const purchaseRoute = require('./routes/purchaseroute'); // Purchase routes
+const salesRoute = require('./routes/salesrouter'); // Sales routes
+const inventoryRoute = require('./routes/inventoryroute'); // Inventory routes
+const orderHistoryRoute = require('./routes/orderhistoryroute'); // Order history routes
+const profileRoute = require('./routes/profileroute'); 
+const dashboardroutes = require('./routes/dashboardroute'); 
+//const pdfRoutes = require("./routes/pdfroute"); // PDF route
+const path = require('path');
+const cors = require('cors'); // CORS middleware
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middlewarer
-app.use(express.json());
-app.use(cors());
-app.use(bodyParser.json());
-app.use('/uploads', express.static('uploads'));
-
+// Connect to the database
 connectDB();
 
-app.use('/api', userRoutes); 
-app.use('/api', loginRoutes); 
-app.use('/api',purchaseRoute);
-app.use('/api',salesRoute);
-app.use('/api',inventoryroute);
-app.use('/api/orders',orderhistoryroute) 
+// Middleware
+app.use(express.json()); // Built-in body parser for JSON
+app.use(cors()); // Enable CORS
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve static files from 'uploads'
 
+// Routes
+app.use('/api', userRoutes); // Registration route
+app.use('/api', loginRoutes); // Login route
+app.use('/api', purchaseRoute); // Purchase routes
+app.use('/api', salesRoute); // Sales routes
+app.use('/api', inventoryRoute); // Inventory routes
+app.use('/api/orders', orderHistoryRoute); // Order history routes
+app.use('/api', profileRoute); // Profile update route
+app.use('/api', dashboardroutes); // Dashboard routes
+//app.use("/api/pdf", pdfRoutes); // PDF routes
+
+// 404 Handler
 app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+    res.status(404).json({ message: 'Route not found' });
 });
 
+// Global error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something went wrong!' });
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Start server
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

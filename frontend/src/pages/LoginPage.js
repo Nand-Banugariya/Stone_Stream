@@ -9,7 +9,9 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState(""); // State for success messages
   const [loading, setLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false); // State for alert visibility
 
   // Email validation regex pattern
   const isValidEmail = (email) => {
@@ -20,17 +22,19 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMessage(""); // Clear previous errors
+    setSuccessMessage(""); // Clear previous success messages
     setLoading(true);
+    setShowAlert(false); // Hide alert before new submission
   
     // Input validation
     if (!email || !password) {
-      setErrorMessage("Email and password are required.");
+      triggerAlert("Email and password are required.", "error");
       setLoading(false);
       return;
     }
   
     if (!isValidEmail(email)) {
-      setErrorMessage("Please enter a valid email.");
+      triggerAlert("Please enter a valid email.", "error");
       setLoading(false);
       return;
     }
@@ -58,30 +62,55 @@ const Login = () => {
         localStorage.setItem('userEmail', data.user.email);
         localStorage.setItem('userId', data.user._id);
   
-        
+        // Trigger success message before navigation
+        triggerAlert("Login successful!", "success");
+
+        // Wait a moment before navigating to purchase page
+        setTimeout(() => {
+          navigate("/purchase");
+        }, 2000); // 2 seconds delay before redirect
   
-        // Navigate to the purchase page after successful login
-        navigate("/purchase");
       } else {
         throw new Error("Invalid response from server");
       }
   
     } catch (error) {
-      console.error("Error:", error);
-      setErrorMessage(error.message || "An unexpected error occurred. Please try again.");
+      triggerAlert(error.message || "An unexpected error occurred. Please try again.", "error");
     } finally {
       setLoading(false); // Stop loading indicator
     }
   };
-  
+
+  // Function to trigger an alert with a message and type (error/success)
+  const triggerAlert = (message, type) => {
+    if (type === "error") {
+      setErrorMessage(message);
+      setSuccessMessage(""); // Clear any success messages
+    } else if (type === "success") {
+      setSuccessMessage(message);
+      setErrorMessage(""); // Clear any error messages
+    }
+
+    setShowAlert(true); // Show the alert
+
+    // Automatically hide alert after 3 seconds
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
 
   return (
     <>
       <Navbar />
+      {/* Alert message */}
+      {showAlert && (
+        <div className={`alert ${successMessage ? 'success' : 'error'} show`} aria-live="assertive">
+          {successMessage || errorMessage}
+        </div>
+      )}
       <div className="login-container">
         <div className="login-form-container">
           <h2 className="login-title">Login</h2>
-          {errorMessage && <div className="error-message" aria-live="assertive">{errorMessage}</div>}
           <form onSubmit={handleLogin}>
             <div className="form-group">
               <label htmlFor="email">Email</label>

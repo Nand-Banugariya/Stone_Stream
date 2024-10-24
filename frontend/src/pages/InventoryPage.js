@@ -4,7 +4,6 @@ import ItemCard from "../components/ItemCard.js";
 import "../styles/InventoryPage.css";
 import Navbar2 from "../components/Navbar2.js";
 
-// Ensure Modal is set properly
 Modal.setAppElement('#root');
 
 const InventoryPage = () => {
@@ -17,13 +16,9 @@ const InventoryPage = () => {
     image: "",
   });
 
-  // Open modal to add new item
   const openModal = () => setIsModalOpen(true);
-  
-  // Close modal after adding item
   const closeModal = () => setIsModalOpen(false);
 
-  // Fetch items from the backend when the component loads
   useEffect(() => {
     fetch('http://localhost:5000/api/items')
       .then((res) => res.json())
@@ -31,13 +26,11 @@ const InventoryPage = () => {
       .catch((error) => console.error("Error fetching items:", error));
   }, []);
 
-  // Handle input change for item form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setItemData({ ...itemData, [name]: value });
   };
 
-  // Handle image upload and convert to Base64
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -49,19 +42,13 @@ const InventoryPage = () => {
     }
   };
 
-  // Submit form to backend to save the item
   const handleSubmit = async () => {
-    // Check if any field is empty
     if (!itemData.name || !itemData.description || !itemData.amount || !itemData.image) {
       alert("All fields are required.");
       return;
     }
 
     try {
-      // Log the itemData to see what is being sent
-      console.log("Sending data:", itemData);
-
-      // Send POST request to backend to store item data
       const response = await fetch('http://localhost:5000/api/inventory', {
         method: 'POST',
         headers: {
@@ -72,9 +59,7 @@ const InventoryPage = () => {
 
       if (response.ok) {
         const newItem = await response.json();
-        // Add the new item to the state
         setItems([...items, newItem]);
-        // Reset the form data and close the modal
         setItemData({ name: "", description: "", amount: "", image: "" });
         closeModal();
       } else {
@@ -86,6 +71,24 @@ const InventoryPage = () => {
     }
   };
 
+  // Delete function to be passed to ItemCard
+  const handleDelete = async (itemId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/inventory/${itemId}`, { // Corrected URL
+        method: 'DELETE',
+      });
+  
+      if (response.ok) {
+        setItems(items.filter(item => item._id !== itemId)); // Remove deleted item from state
+      } else {
+        alert("Failed to delete the item.");
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      alert("Error deleting item.");
+    }
+  };
+  
   return (
     <>
       <Navbar2 />
@@ -94,7 +97,6 @@ const InventoryPage = () => {
           +
         </button>
 
-        {/* Modal for adding new item */}
         <Modal
           isOpen={isModalOpen}
           onRequestClose={closeModal}
@@ -132,7 +134,7 @@ const InventoryPage = () => {
         <div className="item-cards">
           {items.length > 0 ? (
             items.map((item, index) => (
-              <ItemCard key={index} item={item} /> // Pass the whole item object to ItemCard
+              <ItemCard key={index} item={item} onDelete={handleDelete} /> // Pass the delete function to ItemCard
             ))
           ) : (
             <p>No items available.</p>

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import RegisterImage from "../assets/register.png";
 import Navbar from "../components/Navbar";
 import axios from "axios";
-import "../styles/Register.css"; // Include custom styles
 
 const Register = () => {
   const navigate = useNavigate();
@@ -107,15 +106,13 @@ const Register = () => {
         <div className="register-form-container">
           <h2 className="register-title">Register</h2>
 
-          {/* Success Alert */}
           {successMessage && (
-            <div className="alert alert-success slide-down" role="alert">
+            <div className=" alert-success slide-down" role="alert">
               <i className="bi bi-check-circle-fill me-2"></i>
               {successMessage}
             </div>
           )}
 
-          {/* Error Alert */}
           {errorMessage && (
             <div className="alert alert-danger slide-down" role="alert">
               <i className="bi bi-exclamation-triangle-fill me-2"></i>
